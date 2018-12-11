@@ -1,0 +1,90 @@
+cat /proc/cpuinfo
+cat /proc/version
+cat /proc/meminfo
+cat /proc/partitions
+
+
+1) Raspi-config
+Разрешить SSH: Interfacing Options->P2 SSH
+Растянуть операционку на весь диск: Advanced Options->A1 Expand Filesystems...
+Установить имя хоста: Network Options->N1 Hostname
+Установить клавиатуру: Localisation Options->I3 Change Keyboard Layout-> Там где то найти Generic105KeyPC  + English US
+
+Установить локаль: en_US ISO-8959-1
+
+Можно локаль и клавиатуру установить прямо в файле:
+должно быть так:
+/etc/default/locale
+LANG=en_US.UTF-8
+
+/etc/default/keyboard
+XKBMODEL="pc105"
+XKBLAYOUT="us"
+XKBVARIANT=""
+XKBOPTIONS=""
+
+2) Проконтролировать размер диска: df -h
+3) Получить назначенный IP: ifconfig
+4) Создать пользователя: sudo adduser urb
+5) Добавить urb в группу sudo: sudo adduser urb sudo
+   Добавить urb в группу dialout: sudo adduser urb dialout
+6) Проверить подключение по SSH
+7) Выйти logout и войти под urb
+8) sudo apt-get install mc
+9) Устанавливаем задержку на загрузку для корректного опознавания монитора:
+   https://www.raspberrypi.org/documentation/configuration/config-txt/boot.md
+
+В файле /boot/config.txt  в самом начале пишем:
+
+bootcode_delay=5
+
+(The bootcode_delay command delays for a given number of seconds in bootcode.bin before loading start.elf: the default value is 0.
+This is particularly useful to insert a delay before reading the EDID of the monitor, for example if the Pi and monitor are 
+powered from the same source, but the monitor takes longer to start up than the Pi. Try setting this value if the display 
+detection is wrong on initial boot, but is correct if you soft-reboot the Pi without removing power from the monitor.)
+
+10) Запретить гасить монитор при отсутствии активности:
+В файле /boot/cmdline.txt  в самом конце одной строки пишем: consoleblank=0
+11) Сменить пароль у pi: sudo passwd pi
+
+12) Установить git: sudo apt-get install git
+13) В папаке home создать папку Elecrow-LCD101 и клонировать туда драйвер из репозитория:
+     git clone https://github.com/Elecrow-keen/Elecrow-LCD101.git
+Запуск SUDO. /Elecrow-LCD101
+
+14) АВТОЛОГИН ДЛЯ UBUNTU SERVER
+
+	Create the folder: /etc/systemd/system/getty@tty1.service.d
+	Create the file: /etc/systemd/system/getty@tty1.service.d/override.conf
+	Open the file with your favorite editor and add this:
+
+	[Service]
+	ExecStart=
+	ExecStart=-/sbin/agetty --noissue --autologin urb %I $TERM
+	Type=idle
+
+15) В файл /etc/sudoers в самый конец добавить сроку:
+    sudo mcedit /etc/sudoers
+    urb ALL=(ALL) NOPASSWD:ALL
+    что бы не вводить каждый раз пароль для sudo
+
+16) Создать в домашней папке каталог ./ssh 
+    создать файл authorized_keys и скопировать в него ключ, который сгенерирован puttygen
+
+17) В файл .bash_login в папке /home/urb конец файла написать сроку: export TERM=xterm-256color
+    и выбрать в mc Options/Appearance   skin:modarin256-thin
+
+    В файл .bash_login в папке /root/urb в начало файла написать сроку: export TERM=xterm-256color
+    и выбрать в mc Options/Appearance   modarin256root
+
+18) Сменить порт ssh  в файле /ets/sshd-config заменить порт 22 на 4722 к примеру
+
+
+19) Отключение скреенсавера
+    sudo nano /etc/lightdm/lightdm.conf
+    Добавить в него строки
+    [SeatDefaults]
+    xserver-command=X -s 0 -dpms
+    
+    Либо можно установить специальную утилиту
+    sudo apt-get install xscreensaver

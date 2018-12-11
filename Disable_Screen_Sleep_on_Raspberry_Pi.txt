@@ -1,0 +1,48 @@
+Force the screen to stay on
+
+
+sudo nano /etc/lightdm/lightdm.conf
+Add the following lines to the [SeatDefaults] section:
+
+
+# don't sleep the screen
+xserver-command=X -s 0 dpms
+
+[SeatDefaults]
+xserver-command=X -s 0 -dpms
+
+I know this is old, but this didn't work for me at first either. 
+Make sure that what you add/edit comes after [SeatDefaults] and 
+I think the correct command is xserver-command=X -s 0 -dpms (notice the '-' before dpms)
+
+The easiest way to disable screen blanking in the Raspbian GUI is to install 
+xscreensaver then configure it to disable:
+
+sudo apt-get update
+sudo apt-get install xscreensaver
+
+
+Disable_Screen_Sleep_on_Raspberry_Pi
+
+August 26, 2016
+
+There are many different links recommending you update many different config files to disable the screen from sleeping on a Raspberry Pi, but this is the simplest solution I've come across:
+
+sudo apt-get install xscreensaver
+Now open the app xscreensaver
+Click Settings, then at the top choose Disable Screen Sleep from the dropdown. Now you're done!
+
+***
+
+Try adding the following to the /boot/cmdline.txt file :
+consoleblank=0
+
+(make sure it is added to the existing line of text - do not add a new line)
+Texy
+
+***
+
+sudo nano /etc/kbd/config
+BLANK_TIME=0 (Was 30)
+POWERDOWN_TIME=0 (I think it was 15)
+That method only works for the console, it won't stop desktop blanking

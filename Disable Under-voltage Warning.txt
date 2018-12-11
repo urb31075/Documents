@@ -1,0 +1,10 @@
+Disable Under-voltage Warning (Not Recommended)
+Under-voltage may cause SD card corruption and/or other problems. Disabling the warning won’t make it any better. But if you understand the risk, it can be disabled by the steps below. I tested it with Raspbian Stretch (November 2017 version).
+
+Open /boot/config.txt file.
+
+# Disable under-voltage warning
+avoid_warnings=1
+
+Reboot to apply the change.
+sudo reboot
